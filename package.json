@@ -5,7 +5,7 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "start": "nodemon --inspect index.js",
+    "start": "node index.js",
     "dev": "nodemon --inspect index.js",
     "prod": "SET NODE_ENV=production&&nodemon --inspect index.js"
   },
@@ -29,5 +29,8 @@
     "react": "^18.2.0",
     "sharp": "^0.30.7",
     "validator": "^13.7.0"
+  },
+  "engines": {
+    "node": ">=16.0.0"
   }
 }
