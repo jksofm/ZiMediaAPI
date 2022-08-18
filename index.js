@@ -17,6 +17,7 @@ import AppError from "./utils/AppError.js";
 import path from "path";
 import cors from "cors";
 import cookieParser from "cookie-parser"
+import {Server} from "socket.io"
 
 
 
@@ -87,7 +88,62 @@ next(new AppError(`Cannot find ${req.originalUrl}. Please try again later!`,401)
 })
 app.use(globalHandlerError)
 
+
+
+
+
+
+
 const port = process.env.PORT || 3001;
 const server = app.listen(port, () => {
   console.log(`listening on port ${port}`);
+});
+
+
+let activeUsers = [];
+
+const io = new Server(server, {
+  cors: {
+    origin: "http://localhost:3000",
+  },
+});
+
+io.on("connection", (socket) => {
+  ///add new user
+socket.on("new-user-add", (newUserId) => {
+    if (!activeUsers.some((user) => user.userId === newUserId)) {
+      activeUsers.push({
+        userId: newUserId,
+        socketId: socket.id,
+      });
+    }
+    console.log("Conntected Users", activeUsers);
+    
+    io.emit("get-users", activeUsers);
+  });
+  
+  //send message
+  socket.on("send-message",(data)=>{
+      const {receiverId} = data;
+      const userReceive = activeUsers.find((user)=>user.userId === receiverId)
+      console.log("Sending from socket to : ",receiverId)
+      console.log("Data",data)
+      if(userReceive){
+        io.to(userReceive.socketId).emit("receive-message",data);
+      }
+  })
+
+  socket.on("send-comment",(data)=>{
+     const {postId} = data;
+     if(postId){
+      console.log(data)
+      io.emit(`receive-comment-from-${postId}`,data)
+     }
+  })
+
+  socket.on("disconnect", () => {
+    activeUsers = activeUsers.filter((user) => user.socketId !== socket.id);
+    console.log("user disconnected!");
+    io.emit("get-users", activeUsers);
+  });
 });
