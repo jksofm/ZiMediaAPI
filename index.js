@@ -70,12 +70,12 @@ app.use("/api/v1/chat",ChatRoute);
 app.use("/api/v1/message",MessageRoute);
 app.use("/api/v1/comment",CommentRoute);
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-app.use(express.static(__dirname));
-app.get("/*", function(req, res) {
-  res.sendFile(path.join(__dirname, "index.html"));
-});
+// const __filename = fileURLToPath(import.meta.url);
+// const __dirname = path.dirname(__filename);
+// app.use(express.static(__dirname));
+// app.get("/*", function(req, res) {
+//   res.sendFile(path.join(__dirname, "index.html"));
+// });
 
 
 
